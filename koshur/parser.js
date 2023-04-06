@@ -207,8 +207,6 @@ export function parse(input) {
     }
 
     function parse_expression() {
-        return maybe_call(function () {
-            return maybe_binary(parse_atom(), 0);
-        });
+        return maybe_call(() => maybe_binary(parse_atom(), 0));
     }
 }

@@ -17,7 +17,7 @@ var gE = new Environment();
 gE.def("wan", function (val) { console.log(val); });
 
 fs.readdirSync("examples").forEach(file => {
-    fs.readFile("examples/" + file, "utf8", function (err, code) {
+    file.endsWith(".k") && fs.readFile("examples/" + file, "utf8", function (err, code) {
         console.log("Running example: ", file);
 
         if (err) {
