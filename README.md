@@ -1,7 +1,7 @@
 🍁 koshur-lang
 ===============
 
-A simple programming language inspired by the Kashmiri language (Koshur)
+A simple programming language inspired by the Kashmiri language (Koshur).
 
 ---
 
