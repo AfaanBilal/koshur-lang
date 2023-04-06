@@ -29,9 +29,10 @@ gE.def("wan", function (val) { console.log(val); });
 const file = process.argv[process.argv.length - 1];
 const printAst = process.argv.includes("--print-ast");
 const writeAst = process.argv.includes("--write-ast");
+const fromAst = process.argv.includes("--from-ast");
 
-if (!file.endsWith(".k")) {
-    console.error("Usage: node koshur.js [--print-ast] [--write-ast] <filename>");
+if (!file.endsWith(".k") && !(file.endsWith(".ast") && fromAst)) {
+    console.error("Usage: node koshur.js [--print-ast] [--write-ast] [--from-ast] <filename>");
     process.exit(1);
 }
 
@@ -40,7 +41,7 @@ fs.readFile(file, "utf8", function (err, code) {
         console.error("Could not open file: %s", err); process.exit(1);
     }
 
-    var ast = parse(TokenStream(InputStream(code)));
+    let ast = fromAst ? JSON.parse(code) : parse(TokenStream(InputStream(code)));
 
     if (printAst) {
         console.log(JSON.stringify(ast, null, 4));
