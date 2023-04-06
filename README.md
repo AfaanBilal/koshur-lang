@@ -70,7 +70,7 @@ yeli poz {
 yeli apuz teli
     wan("apuz!")
 nate
-    wan("poz!")
+    wan("poz!");
 ```
 
 ### Functions
