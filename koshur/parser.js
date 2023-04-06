@@ -189,21 +189,21 @@ export function parse(input) {
     }
 
     function parse_toplevel() {
-        var prog = [];
+        var program = [];
 
         while (!input.eof()) {
-            prog.push(parse_expression());
+            program.push(parse_expression());
             if (!input.eof()) skip_punctuation(";");
         }
 
-        return { type: NodeType.Program, prog };
+        return { type: NodeType.Program, program };
     }
 
     function parse_prog() {
-        var prog = delimited("{", "}", ";", parse_expression);
-        if (prog.length == 0) return FALSE;
-        if (prog.length == 1) return prog[0];
-        return { type: NodeType.Program, prog };
+        var program = delimited("{", "}", ";", parse_expression);
+        if (program.length == 0) return FALSE;
+        if (program.length == 1) return program[0];
+        return { type: NodeType.Program, program };
     }
 
     function parse_expression() {

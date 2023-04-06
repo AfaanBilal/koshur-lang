@@ -76,7 +76,7 @@ export function evaluate(exp, env) {
 
         case NodeType.Program:
             var val = false;
-            exp.prog.forEach(exp => { val = evaluate(exp, env) });
+            exp.program.forEach(exp => { val = evaluate(exp, env) });
             return val;
 
         case NodeType.Call:
