@@ -112,6 +112,25 @@ This is a list of all the keywords in **koshur-lang**.
 - banav
 - λ
 
+### Operators
+This is a list of all the operators available in **koshur-lang**.
+
+| Operator | Description        |
+| -------- | ------------------ |
+| \+       | Addition           |
+| \-       | Subtraction        |
+| \*       | Multiplication     |
+| \/       | Division           |
+| %        | Modulo (Remainder) |
+| &&       | Logical AND        |
+| \|\|     | Logical OR         |
+| <        | Less than          |
+| \>       | Greater than       |
+| <=       | Less or Equal      |
+| \>=      | Greater or Equal   |
+| ==       | Equals             |
+| !=       | Not Equal          |
+
 ---
 
 ## Contributing
