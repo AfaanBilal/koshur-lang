@@ -26,16 +26,29 @@ gE.def("time", function (func) {
 
 gE.def("wan", function (val) { console.log(val); });
 
-if (!process.argv[2]) {
-    console.error("Usage: node koshur.js <filename>");
+const file = process.argv[process.argv.length - 1];
+const printAst = process.argv.includes("--print-ast");
+const writeAst = process.argv.includes("--write-ast");
+
+if (!file.endsWith(".k")) {
+    console.error("Usage: node koshur.js [--print-ast] [--write-ast] <filename>");
     process.exit(1);
 }
 
-fs.readFile(process.argv[2], "utf8", function (err, code) {
+fs.readFile(file, "utf8", function (err, code) {
     if (err) {
         console.error("Could not open file: %s", err); process.exit(1);
     }
 
     var ast = parse(TokenStream(InputStream(code)));
+
+    if (printAst) {
+        console.log(JSON.stringify(ast, null, 4));
+    }
+
+    if (writeAst) {
+        fs.writeFileSync(file.replace(".k", ".ast"), JSON.stringify(ast, null, 4));
+    }
+
     evaluate(ast, gE);
 });
