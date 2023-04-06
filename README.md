@@ -79,8 +79,25 @@ Functions in **koshur-lang** are lambdas.
 bod-kus = banav(x, y) yeli x > y teli x nate y;
 
 wan(bod-kus(10, 20)); # Prints 20
+
+# Shortcut for banav is λ
+
+lakut-kus = λ(x, y) yeli x < y teli x nate y;
+
+wan(lakut-kus(10, 20)); # Prints 10
 ```
 This creates a function (lambda) named `bod-kus` which returns the bigger of the two parameters.
+
+### Keywords
+This is a list of all the keywords in **koshur-lang**.
+
+- yeli
+- teli
+- nate
+- poz
+- apuz
+- banav
+- λ
 
 ---
 

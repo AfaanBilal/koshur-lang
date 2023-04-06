@@ -22,3 +22,9 @@ nate
 bod-kus = banav(x, y) yeli x > y teli x nate y;
 
 wan(bod-kus(10, 20)); # Prints 20
+
+# Shortcut for banav is λ
+
+lakut-kus = λ(x, y) yeli x < y teli x nate y;
+
+wan(lakut-kus(10, 20)); # Prints 10
