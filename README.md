@@ -8,6 +8,13 @@ A simple programming language inspired by the Kashmiri language (Koshur)
 ### **Author**: [Afaan Bilal](https://afaan.dev)
 
 ---
+
+## Hello World
+````
+wan("Hello, world!");
+````
+
+---
 ## Run
 ````
 node koshur.js <filename>
