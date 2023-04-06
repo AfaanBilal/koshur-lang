@@ -7,6 +7,8 @@
  * @license MIT
  */
 
+import { NodeType } from "./parser.js";
+
 export function Environment(parent) {
     this.vars = Object.create(parent ? parent.vars : null);
     this.parent = parent;
@@ -46,25 +48,25 @@ Environment.prototype = {
 
 export function evaluate(exp, env) {
     switch (exp.type) {
-        case "num":
-        case "str":
-        case "bool":
+        case NodeType.Number:
+        case NodeType.String:
+        case NodeType.Boolean:
             return exp.value;
 
-        case "var":
+        case NodeType.Variable:
             return env.get(exp.value);
 
-        case "assign":
-            if (exp.left.type != "var")
+        case NodeType.Assignment:
+            if (exp.left.type != NodeType.Variable)
                 throw new Error("Cannot assign to " + JSON.stringify(exp.left));
             return env.set(exp.left.value, evaluate(exp.right, env));
 
-        case "binary":
+        case NodeType.Binary:
             return apply_op(exp.operator,
                 evaluate(exp.left, env),
                 evaluate(exp.right, env));
 
-        case "lambda":
+        case NodeType.Lambda:
             return make_lambda(env, exp);
 
         case "if":
@@ -72,12 +74,12 @@ export function evaluate(exp, env) {
             if (cond !== false) return evaluate(exp.then, env);
             return exp.else ? evaluate(exp.else, env) : false;
 
-        case "prog":
+        case NodeType.Program:
             var val = false;
             exp.prog.forEach(exp => { val = evaluate(exp, env) });
             return val;
 
-        case "call":
+        case NodeType.Call:
             var func = evaluate(exp.func, env);
             return func.apply(null, exp.args.map(arg => evaluate(arg, env)));
 
@@ -95,7 +97,7 @@ function apply_op(op, a, b) {
 
     function div(x) {
         if (num(x) == 0)
-            throw new Error("Divide by zero");
+            throw new Error("Division by zero");
         return x;
     }
 
@@ -115,7 +117,7 @@ function apply_op(op, a, b) {
         case "!=": return a !== b;
     }
 
-    throw new Error("Can't apply operator " + op);
+    throw new Error("Unknown operator " + op);
 }
 
 function make_lambda(env, exp) {

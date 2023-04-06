@@ -7,7 +7,22 @@
  * @license MIT
  */
 
-var FALSE = { type: "bool", value: false };
+export const NodeType = {
+    Program: "prog",
+    Assignment: "assign",
+    Binary: "binary",
+    Punctuation: "punc",
+    Keyword: "kw",
+    Operator: "op",
+    Variable: "var",
+    Number: "num",
+    String: "str",
+    Boolean: "bool",
+    Lambda: "lambda",
+    Call: "call",
+};
+
+var FALSE = { type: NodeType.Boolean, value: false };
 
 export function parse(input) {
     var PRECEDENCE = {
@@ -23,17 +38,17 @@ export function parse(input) {
 
     function is_punctuation(ch) {
         var tok = input.peek();
-        return tok && tok.type == "punc" && (!ch || tok.value == ch) && tok;
+        return tok && tok.type == NodeType.Punctuation && (!ch || tok.value == ch) && tok;
     }
 
     function is_kw(kw) {
         var tok = input.peek();
-        return tok && tok.type == "kw" && (!kw || tok.value == kw) && tok;
+        return tok && tok.type == NodeType.Keyword && (!kw || tok.value == kw) && tok;
     }
 
     function is_op(op) {
         var tok = input.peek();
-        return tok && tok.type == "op" && (!op || tok.value == op) && tok;
+        return tok && tok.type == NodeType.Operator && (!op || tok.value == op) && tok;
     }
 
     function skip_punctuation(ch) {
@@ -64,7 +79,7 @@ export function parse(input) {
             if (his_prec > my_prec) {
                 input.next();
                 return maybe_binary({
-                    type: tok.value == "=" ? "assign" : "binary",
+                    type: tok.value == "=" ? NodeType.Assignment : NodeType.Binary,
                     operator: tok.value,
                     left: left,
                     right: maybe_binary(parse_atom(), his_prec)
@@ -95,7 +110,7 @@ export function parse(input) {
 
     function parse_call(func) {
         return {
-            type: "call",
+            type: NodeType.Call,
             func: func,
             args: delimited("(", ")", ",", parse_expression),
         };
@@ -103,7 +118,7 @@ export function parse(input) {
 
     function parse_varname() {
         var name = input.next();
-        if (name.type != "var") input.croak("Expecting variable name");
+        if (name.type != NodeType.Variable) input.croak("Expecting variable name");
         return name.value;
     }
 
@@ -130,7 +145,7 @@ export function parse(input) {
 
     function parse_lambda() {
         return {
-            type: "lambda",
+            type: NodeType.Lambda,
             vars: delimited("(", ")", ",", parse_varname),
             body: parse_expression()
         };
@@ -138,7 +153,7 @@ export function parse(input) {
 
     function parse_bool() {
         return {
-            type: "bool",
+            type: NodeType.Boolean,
             value: input.next().value == "poz"
         };
     }
@@ -166,7 +181,7 @@ export function parse(input) {
             }
 
             var tok = input.next();
-            if (tok.type == "var" || tok.type == "num" || tok.type == "str")
+            if (tok.type == NodeType.Variable || tok.type == NodeType.Number || tok.type == NodeType.String)
                 return tok;
             unexpected();
         });
@@ -180,14 +195,14 @@ export function parse(input) {
             if (!input.eof()) skip_punctuation(";");
         }
 
-        return { type: "prog", prog: prog };
+        return { type: NodeType.Program, prog: prog };
     }
 
     function parse_prog() {
         var prog = delimited("{", "}", ";", parse_expression);
         if (prog.length == 0) return FALSE;
         if (prog.length == 1) return prog[0];
-        return { type: "prog", prog: prog };
+        return { type: NodeType.Program, prog: prog };
     }
 
     function parse_expression() {

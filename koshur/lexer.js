@@ -7,6 +7,8 @@
  * @license MIT
  */
 
+import { NodeType } from "./parser.js";
+
 export function TokenStream(input) {
     var current = null;
     var keywords = " yeli teli nate banav λ poz apuz ";
@@ -69,14 +71,14 @@ export function TokenStream(input) {
             return is_digit(ch);
         });
 
-        return { type: "num", value: parseFloat(number) };
+        return { type: NodeType.Number, value: parseFloat(number) };
     }
 
     function read_ident() {
         var id = read_while(is_id);
 
         return {
-            type: is_keyword(id) ? "kw" : "var",
+            type: is_keyword(id) ? NodeType.Keyword : NodeType.Variable,
             value: id
         };
     }
@@ -104,7 +106,7 @@ export function TokenStream(input) {
     }
 
     function read_string() {
-        return { type: "str", value: read_escaped('"') };
+        return { type: NodeType.String, value: read_escaped('"') };
     }
 
     function skip_comment() {
@@ -132,13 +134,13 @@ export function TokenStream(input) {
 
         if (is_punctuation(ch))
             return {
-                type: "punc",
+                type: NodeType.Punctuation,
                 value: input.next()
             };
 
         if (is_op_char(ch))
             return {
-                type: "op",
+                type: NodeType.Operator,
                 value: read_while(is_op_char)
             };
 
