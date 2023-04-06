@@ -108,7 +108,7 @@ export function TokenStream(input) {
     }
 
     function skip_comment() {
-        read_while(function (ch) { return ch != "\n" });
+        read_while(ch => ch != "\n");
         input.next();
     }
 
