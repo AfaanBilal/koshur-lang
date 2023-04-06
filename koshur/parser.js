@@ -8,16 +8,16 @@
  */
 
 export const NodeType = {
-    Program: "prog",
-    Assignment: "assign",
+    Program: "program",
+    Assignment: "assignment",
     Binary: "binary",
-    Condition: "cond",
-    Punctuation: "punc",
+    Condition: "condition",
+    Punctuation: "punctuation",
     Keyword: "kw",
     Operator: "op",
     Variable: "var",
-    Number: "num",
-    String: "str",
+    Number: "number",
+    String: "string",
     Boolean: "bool",
     Lambda: "lambda",
     Call: "call",
