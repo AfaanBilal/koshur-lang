@@ -11,10 +11,10 @@ export function InputStream(input) {
     var pos = 0, line = 1, col = 0;
 
     return {
-        next  : next,
-        peek  : peek,
-        eof   : eof,
-        croak : croak,
+        next,
+        peek,
+        eof,
+        err,
     };
 
     function next() {
@@ -31,7 +31,7 @@ export function InputStream(input) {
         return peek() == "";
     }
 
-    function croak(msg) {
+    function err(msg) {
         throw new Error(msg + " (" + line + ":" + col + ")");
     }
 }

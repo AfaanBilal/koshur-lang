@@ -14,10 +14,10 @@ export function TokenStream(input) {
     var keywords = " yeli teli nate banav λ poz apuz ";
 
     return {
-        next: next,
-        peek: peek,
-        eof: eof,
-        croak: input.croak
+        next,
+        peek,
+        eof,
+        err: input.err
     };
 
     function is_keyword(x) {
@@ -144,7 +144,7 @@ export function TokenStream(input) {
                 value: read_while(is_op_char)
             };
 
-        input.croak("Can't handle character: " + ch);
+        input.err("Can't handle character: " + ch);
     }
 
     function peek() {

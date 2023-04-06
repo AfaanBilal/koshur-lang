@@ -54,21 +54,21 @@ export function parse(input) {
 
     function skip_punctuation(ch) {
         if (is_punctuation(ch)) input.next();
-        else input.croak("Expecting punctuation: \"" + ch + "\"");
+        else input.err("Expecting punctuation: \"" + ch + "\"");
     }
 
     function skip_kw(kw) {
         if (is_kw(kw)) input.next();
-        else input.croak("Expecting keyword: \"" + kw + "\"");
+        else input.err("Expecting keyword: \"" + kw + "\"");
     }
 
     function skip_op(op) {
         if (is_op(op)) input.next();
-        else input.croak("Expecting operator: \"" + op + "\"");
+        else input.err("Expecting operator: \"" + op + "\"");
     }
 
     function unexpected() {
-        input.croak("Unexpected token: " + JSON.stringify(input.peek()));
+        input.err("Unexpected token: " + JSON.stringify(input.peek()));
     }
 
     function maybe_binary(left, my_prec) {
@@ -119,7 +119,7 @@ export function parse(input) {
 
     function parse_varname() {
         var name = input.next();
-        if (name.type != NodeType.Variable) input.croak("Expecting variable name");
+        if (name.type != NodeType.Variable) input.err("Expecting variable name");
         return name.value;
     }
 
@@ -132,8 +132,8 @@ export function parse(input) {
 
         var ret = {
             type: NodeType.Condition,
-            cond: cond,
-            then: then,
+            cond,
+            then,
         };
 
         if (is_kw("nate")) {
@@ -196,14 +196,14 @@ export function parse(input) {
             if (!input.eof()) skip_punctuation(";");
         }
 
-        return { type: NodeType.Program, prog: prog };
+        return { type: NodeType.Program, prog };
     }
 
     function parse_prog() {
         var prog = delimited("{", "}", ";", parse_expression);
         if (prog.length == 0) return FALSE;
         if (prog.length == 1) return prog[0];
-        return { type: NodeType.Program, prog: prog };
+        return { type: NodeType.Program, prog };
     }
 
     function parse_expression() {
