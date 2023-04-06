@@ -139,7 +139,7 @@ export function parse(input) {
     function parse_bool() {
         return {
             type: "bool",
-            value: input.next().value == "true"
+            value: input.next().value == "poz"
         };
     }
 
