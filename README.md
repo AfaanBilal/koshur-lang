@@ -22,6 +22,8 @@ node koshur.js <filename>
 ---
 
 ## Run examples
+See examples in the `examples/` directory.
+
 ````
 node run-examples.js
 ````
