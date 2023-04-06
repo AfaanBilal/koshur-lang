@@ -19,6 +19,15 @@ wan("Hello, world!");
 ````
 node koshur.js <filename>
 ````
+
+The `filename` must be the last parameter and must end with `.k`.
+
+```
+node koshur.js [--print-ast] [--write-ast] <filename>
+```
+- Add `--print-ast` to print the Abstract Syntax Tree.
+- Add `--write-ast` to write the Abstract Syntax Tree to a file named `filename` with extension set to `.ast`.
+
 ---
 
 ## Run examples
