@@ -11,6 +11,7 @@ export const NodeType = {
     Program: "prog",
     Assignment: "assign",
     Binary: "binary",
+    Condition: "cond",
     Punctuation: "punc",
     Keyword: "kw",
     Operator: "op",
@@ -130,7 +131,7 @@ export function parse(input) {
         var then = parse_expression();
 
         var ret = {
-            type: "if",
+            type: NodeType.Condition,
             cond: cond,
             then: then,
         };

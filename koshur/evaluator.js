@@ -69,7 +69,7 @@ export function evaluate(exp, env) {
         case NodeType.Lambda:
             return make_lambda(env, exp);
 
-        case "if":
+        case NodeType.Condition:
             var cond = evaluate(exp.cond, env);
             if (cond !== false) return evaluate(exp.then, env);
             return exp.else ? evaluate(exp.else, env) : false;
