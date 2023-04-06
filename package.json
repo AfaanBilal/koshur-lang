@@ -1,0 +1,26 @@
+{
+  "name": "koshur-lang",
+  "version": "0.1.0",
+  "description": "A simple programming language inspired by the Kashmiri language (Koshur)",
+  "main": "koshurc.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AfaanBilal/koshur-lang.git"
+  },
+  "keywords": [
+    "koshur",
+    "kashmiri",
+    "language",
+    "programming"
+  ],
+  "author": "Afaan Bilal",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AfaanBilal/koshur-lang/issues"
+  },
+  "homepage": "https://github.com/AfaanBilal/koshur-lang#readme"
+}
