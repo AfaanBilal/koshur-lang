@@ -20,35 +20,35 @@ export function TokenStream(input) {
         err: input.err
     };
 
-    function is_keyword(x) {
+    function isKeyword(x) {
         return keywords.indexOf(" " + x + " ") >= 0;
     }
 
-    function is_digit(ch) {
+    function isDigit(ch) {
         return /[0-9]/i.test(ch);
     }
 
-    function is_id_start(ch) {
+    function isIdStart(ch) {
         return /[a-zλ_]/i.test(ch);
     }
 
-    function is_id(ch) {
-        return is_id_start(ch) || "?!-<>=0123456789".indexOf(ch) >= 0;
+    function isId(ch) {
+        return isIdStart(ch) || "?!-<>=0123456789".indexOf(ch) >= 0;
     }
 
-    function is_op_char(ch) {
+    function isOpChar(ch) {
         return "+-*/%=&|<>!".indexOf(ch) >= 0;
     }
 
-    function is_punctuation(ch) {
+    function isPunctuation(ch) {
         return ",;(){}[]".indexOf(ch) >= 0;
     }
 
-    function is_whitespace(ch) {
+    function isWhitespace(ch) {
         return " \t\n\r".indexOf(ch) >= 0;
     }
 
-    function read_while(predicate) {
+    function readWhile(predicate) {
         var str = "";
 
         while (!input.eof() && predicate(input.peek())) {
@@ -58,32 +58,32 @@ export function TokenStream(input) {
         return str;
     }
 
-    function read_number() {
+    function readNumber() {
         var has_dot = false;
 
-        var number = read_while(ch => {
+        var number = readWhile(ch => {
             if (ch == ".") {
                 if (has_dot) return false;
                 has_dot = true;
                 return true;
             }
 
-            return is_digit(ch);
+            return isDigit(ch);
         });
 
         return { type: NodeType.Number, value: parseFloat(number) };
     }
 
-    function read_ident() {
-        var id = read_while(is_id);
+    function readIdent() {
+        var id = readWhile(isId);
 
         return {
-            type: is_keyword(id) ? NodeType.Keyword : NodeType.Variable,
+            type: isKeyword(id) ? NodeType.Keyword : NodeType.Variable,
             value: id
         };
     }
 
-    function read_escaped(end) {
+    function readEscaped(end) {
         var escaped = false, str = "";
 
         input.next();
@@ -105,56 +105,56 @@ export function TokenStream(input) {
         return str;
     }
 
-    function read_string() {
-        return { type: NodeType.String, value: read_escaped('"') };
+    function readString() {
+        return { type: NodeType.String, value: readEscaped('"') };
     }
 
-    function skip_comment() {
-        read_while(ch => ch != "\n");
+    function skipComment() {
+        readWhile(ch => ch != "\n");
         input.next();
     }
 
-    function read_next() {
-        read_while(is_whitespace);
+    function readNext() {
+        readWhile(isWhitespace);
 
         if (input.eof()) return null;
 
-        var ch = input.peek();
+        var c = input.peek();
 
-        if (ch == "#") {
-            skip_comment();
-            return read_next();
+        if (c == "#") {
+            skipComment();
+            return readNext();
         }
 
-        if (ch == '"') return read_string();
+        if (c == '"') return readString();
 
-        if (is_digit(ch)) return read_number();
+        if (isDigit(c)) return readNumber();
 
-        if (is_id_start(ch)) return read_ident();
+        if (isIdStart(c)) return readIdent();
 
-        if (is_punctuation(ch))
+        if (isPunctuation(c))
             return {
                 type: NodeType.Punctuation,
                 value: input.next()
             };
 
-        if (is_op_char(ch))
+        if (isOpChar(c))
             return {
                 type: NodeType.Operator,
-                value: read_while(is_op_char)
+                value: readWhile(isOpChar)
             };
 
-        input.err("Can't handle character: " + ch);
+        input.err("Can't handle character: " + c);
     }
 
     function peek() {
-        return current || (current = read_next());
+        return current || (current = readNext());
     }
 
     function next() {
         var tok = current;
         current = null;
-        return tok || read_next();
+        return tok || readNext();
     }
 
     function eof() {

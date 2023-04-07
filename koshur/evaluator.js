@@ -67,12 +67,12 @@ export function evaluate(exp, env) {
             return env.set(exp.left.value, evaluate(exp.right, env));
 
         case NodeType.Binary:
-            return apply_op(exp.operator,
+            return applyOp(exp.operator,
                 evaluate(exp.left, env),
                 evaluate(exp.right, env));
 
         case NodeType.Lambda:
-            return make_lambda(env, exp);
+            return makeLambda(env, exp);
 
         case NodeType.Condition:
             var cond = evaluate(exp.cond, env);
@@ -93,7 +93,7 @@ export function evaluate(exp, env) {
     }
 }
 
-function apply_op(op, a, b) {
+function applyOp(op, a, b) {
     function num(x) {
         if (typeof x != "number")
             throw new Error("Expected number but got " + x);
@@ -125,7 +125,7 @@ function apply_op(op, a, b) {
     throw new Error("Unknown operator " + op);
 }
 
-function make_lambda(env, exp) {
+function makeLambda(env, exp) {
     function lambda() {
         var names = exp.vars;
         var scope = env.extend();

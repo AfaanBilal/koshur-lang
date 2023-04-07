@@ -18,9 +18,9 @@ export function InputStream(input) {
     };
 
     function next() {
-        var ch = input.charAt(pos++);
-        if (ch == "\n") line++, col = 0; else col++;
-        return ch;
+        var c = input.charAt(pos++);
+        if (c == "\n") line++, col = 0; else col++;
+        return c;
     }
 
     function peek() {

@@ -35,35 +35,35 @@ export function parse(input) {
         "*": 20, "/": 20, "%": 20,
     };
 
-    return parse_toplevel();
+    return parseTopLevel();
 
-    function is_punctuation(ch) {
+    function isPunctuation(ch) {
         var tok = input.peek();
         return tok && tok.type == NodeType.Punctuation && (!ch || tok.value == ch) && tok;
     }
 
-    function is_kw(kw) {
+    function isKw(kw) {
         var tok = input.peek();
         return tok && tok.type == NodeType.Keyword && (!kw || tok.value == kw) && tok;
     }
 
-    function is_op(op) {
+    function isOp(op) {
         var tok = input.peek();
         return tok && tok.type == NodeType.Operator && (!op || tok.value == op) && tok;
     }
 
-    function skip_punctuation(ch) {
-        if (is_punctuation(ch)) input.next();
+    function skipPunctuation(ch) {
+        if (isPunctuation(ch)) input.next();
         else input.err("Expecting punctuation: \"" + ch + "\"");
     }
 
-    function skip_kw(kw) {
-        if (is_kw(kw)) input.next();
+    function skipKw(kw) {
+        if (isKw(kw)) input.next();
         else input.err("Expecting keyword: \"" + kw + "\"");
     }
 
-    function skip_op(op) {
-        if (is_op(op)) input.next();
+    function skipOp(op) {
+        if (isOp(op)) input.next();
         else input.err("Expecting operator: \"" + op + "\"");
     }
 
@@ -71,19 +71,19 @@ export function parse(input) {
         input.err("Unexpected token: " + JSON.stringify(input.peek()));
     }
 
-    function maybe_binary(left, my_prec) {
-        var tok = is_op();
+    function maybeBinary(left, my_prec) {
+        var tok = isOp();
 
         if (tok) {
             var his_prec = PRECEDENCE[tok.value];
 
             if (his_prec > my_prec) {
                 input.next();
-                return maybe_binary({
+                return maybeBinary({
                     type: tok.value == "=" ? NodeType.Assignment : NodeType.Binary,
                     operator: tok.value,
                     left: left,
-                    right: maybe_binary(parse_atom(), his_prec)
+                    right: maybeBinary(parseAtom(), his_prec)
                 }, my_prec);
             }
         }
@@ -94,41 +94,41 @@ export function parse(input) {
     function delimited(start, stop, separator, parser) {
         var a = [], first = true;
 
-        skip_punctuation(start);
+        skipPunctuation(start);
 
         while (!input.eof()) {
-            if (is_punctuation(stop)) break;
-            if (first) first = false; else skip_punctuation(separator);
-            if (is_punctuation(stop)) break;
+            if (isPunctuation(stop)) break;
+            if (first) first = false; else skipPunctuation(separator);
+            if (isPunctuation(stop)) break;
 
             a.push(parser());
         }
 
-        skip_punctuation(stop);
+        skipPunctuation(stop);
 
         return a;
     }
 
-    function parse_call(func) {
+    function parseCall(func) {
         return {
             type: NodeType.Call,
             func: func,
-            args: delimited("(", ")", ",", parse_expression),
+            args: delimited("(", ")", ",", parseExpression),
         };
     }
 
-    function parse_varname() {
+    function parseVarname() {
         var name = input.next();
         if (name.type != NodeType.Variable) input.err("Expecting variable name");
         return name.value;
     }
 
-    function parse_if() {
-        skip_kw("yeli");
-        var cond = parse_expression();
-        if (!is_punctuation("{")) skip_kw("teli");
+    function parseIf() {
+        skipKw("yeli");
+        var cond = parseExpression();
+        if (!isPunctuation("{")) skipKw("teli");
 
-        var then = parse_expression();
+        var then = parseExpression();
 
         var ret = {
             type: NodeType.Condition,
@@ -136,49 +136,49 @@ export function parse(input) {
             then,
         };
 
-        if (is_kw("nate")) {
+        if (isKw("nate")) {
             input.next();
-            ret.else = parse_expression();
+            ret.else = parseExpression();
         }
 
         return ret;
     }
 
-    function parse_lambda() {
+    function parseLambda() {
         return {
             type: NodeType.Lambda,
-            vars: delimited("(", ")", ",", parse_varname),
-            body: parse_expression()
+            vars: delimited("(", ")", ",", parseVarname),
+            body: parseExpression()
         };
     }
 
-    function parse_bool() {
+    function parseBool() {
         return {
             type: NodeType.Boolean,
             value: input.next().value == "poz"
         };
     }
 
-    function maybe_call(expr) {
+    function maybeCall(expr) {
         expr = expr();
-        return is_punctuation("(") ? parse_call(expr) : expr;
+        return isPunctuation("(") ? parseCall(expr) : expr;
     }
 
-    function parse_atom() {
-        return maybe_call(function () {
-            if (is_punctuation("(")) {
+    function parseAtom() {
+        return maybeCall(function () {
+            if (isPunctuation("(")) {
                 input.next();
-                var exp = parse_expression();
-                skip_punctuation(")");
+                var exp = parseExpression();
+                skipPunctuation(")");
                 return exp;
             }
 
-            if (is_punctuation("{")) return parse_prog();
-            if (is_kw("yeli")) return parse_if();
-            if (is_kw("poz") || is_kw("apuz")) return parse_bool();
-            if (is_kw("banav") || is_kw("λ")) {
+            if (isPunctuation("{")) return parseProgram();
+            if (isKw("yeli")) return parseIf();
+            if (isKw("poz") || isKw("apuz")) return parseBool();
+            if (isKw("banav") || isKw("λ")) {
                 input.next();
-                return parse_lambda();
+                return parseLambda();
             }
 
             var tok = input.next();
@@ -188,25 +188,25 @@ export function parse(input) {
         });
     }
 
-    function parse_toplevel() {
+    function parseTopLevel() {
         var program = [];
 
         while (!input.eof()) {
-            program.push(parse_expression());
-            if (!input.eof()) skip_punctuation(";");
+            program.push(parseExpression());
+            if (!input.eof()) skipPunctuation(";");
         }
 
         return { type: NodeType.Program, program };
     }
 
-    function parse_prog() {
-        var program = delimited("{", "}", ";", parse_expression);
+    function parseProgram() {
+        var program = delimited("{", "}", ";", parseExpression);
         if (program.length == 0) return FALSE;
         if (program.length == 1) return program[0];
         return { type: NodeType.Program, program };
     }
 
-    function parse_expression() {
-        return maybe_call(() => maybe_binary(parse_atom(), 0));
+    function parseExpression() {
+        return maybeCall(() => maybeBinary(parseAtom(), 0));
     }
 }
