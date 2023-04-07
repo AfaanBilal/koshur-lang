@@ -9,42 +9,47 @@
 
 import { NodeType } from "./parser.js";
 
-export function Environment(parent) {
-    this.vars = Object.create(parent ? parent.vars : null);
-    this.parent = parent;
-}
+export class Environment {
+    constructor(parent) {
+        this.vars = Object.create(parent ? parent.vars : null);
+        this.parent = parent;
+    }
 
-Environment.prototype = {
-    extend: function () {
+    extend() {
         return new Environment(this);
-    },
+    }
 
-    lookup: function (name) {
+    lookup(name) {
         var scope = this;
+
         while (scope) {
             if (Object.prototype.hasOwnProperty.call(scope.vars, name))
                 return scope;
+
             scope = scope.parent;
         }
-    },
+    }
 
-    get: function (name) {
+    get(name) {
         if (name in this.vars)
             return this.vars[name];
-        throw new Error("Undefined variable " + name);
-    },
 
-    set: function (name, value) {
+        throw new Error("Undefined variable " + name);
+    }
+
+    set(name, value) {
         var scope = this.lookup(name);
+
         if (!scope && this.parent)
             throw new Error("Undefined variable " + name);
-        return (scope || this).vars[name] = value;
-    },
 
-    def: function (name, value) {
+        return (scope || this).vars[name] = value;
+    }
+
+    def(name, value) {
         return this.vars[name] = value;
-    },
-};
+    }
+}
 
 export function evaluate(exp, env) {
     switch (exp.type) {
