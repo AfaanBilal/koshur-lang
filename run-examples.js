@@ -14,7 +14,7 @@ import { InputStream } from "./koshur/input.js";
 import { Environment, evaluate } from "./koshur/evaluator.js";
 
 var gE = new Environment();
-gE.def("wan", function (val) { console.log(val); });
+gE.def("wan", (...v) => console.log(...v));
 
 fs.readdirSync("examples").forEach(file => {
     file.endsWith(".k") && fs.readFile("examples/" + file, "utf8", function (err, code) {

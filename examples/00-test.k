@@ -28,3 +28,5 @@ wan(bod-kus(10, 20)); # Prints 20
 lakut-kus = λ(x, y) yeli x < y teli x nate y;
 
 wan(lakut-kus(10, 20)); # Prints 10
+
+wan("x =", x, "y =", y);

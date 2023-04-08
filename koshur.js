@@ -24,7 +24,7 @@ gE.def("time", function (func) {
     }
 });
 
-gE.def("wan", function (val) { console.log(val); });
+gE.def("wan", (...v) => console.log(...v));
 
 const file = process.argv[process.argv.length - 1];
 const printAst = process.argv.includes("--print-ast");
