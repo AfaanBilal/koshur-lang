@@ -8,5 +8,4 @@
 #
 
 bod-kus = banav(x, y) yeli x > y teli x nate y;
-wan("Bod chu: ");
-wan(bod-kus(2, 3));
+wan("Bod chu:", bod-kus(2, 3));
