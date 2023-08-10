@@ -19,43 +19,25 @@ export function TokenStream(input) {
         eof,
         err: input.err
     };
-
-    function isKeyword(x) {
-        return keywords.indexOf(" " + x + " ") >= 0;
-    }
-
-    function isDigit(ch) {
-        return /[0-9]/i.test(ch);
-    }
-
-    function isIdStart(ch) {
-        return /[a-zλ_]/i.test(ch);
-    }
-
-    function isId(ch) {
-        return isIdStart(ch) || "?!-<>=0123456789".indexOf(ch) >= 0;
-    }
-
-    function isOpChar(ch) {
-        return "+-*/%=&|<>!".indexOf(ch) >= 0;
-    }
-
-    function isPunctuation(ch) {
-        return ",;(){}[]".indexOf(ch) >= 0;
-    }
-
-    function isWhitespace(ch) {
-        return " \t\n\r".indexOf(ch) >= 0;
-    }
+    
+    const readString = ()=> ({ type: NodeType.String, value: readEscaped('"') })
+    const eof = ()=> (peek() == null)
+    const peek = ()=> (current || (current = readNext()))
+    
+    const isKeyWord = x => keywords.indexOf(" " + x + " ") >= 0;
+    const isDigit = c => /[0-9]/i.test(c);
+    const idIdStart = c => /[a-zλ_]/i.test(c);
+    const idId = c => isIdStart(ch) || "?!-<>=0123456789".indexOf(c) >= 0;
+    const isOpChar => c => "+-*/%=&|<>!".indexOf(c) >= 0;
+    const isPunctuation = c => ",;(){}[]".indexOf(c) >= 0;
+    const isWhitespace = c => " \t\n\r".indexOf(c) >= 0;
 
     function readWhile(predicate) {
-        var str = "";
-
+    const characters = [];
         while (!input.eof() && predicate(input.peek())) {
-            str += input.next();
+            characters.push(input.next());
         }
-
-        return str;
+    return characters.join('');
     }
 
     function readNumber() {
@@ -105,9 +87,7 @@ export function TokenStream(input) {
         return str;
     }
 
-    function readString() {
-        return { type: NodeType.String, value: readEscaped('"') };
-    }
+  
 
     function skipComment() {
         readWhile(ch => ch != "\n");
@@ -132,32 +112,15 @@ export function TokenStream(input) {
 
         if (isIdStart(c)) return readIdent();
 
-        if (isPunctuation(c))
-            return {
-                type: NodeType.Punctuation,
-                value: input.next()
-            };
+        if (isPunctuation(c)) return { type: NodeType.Punctuation, value: input.next() };
 
-        if (isOpChar(c))
-            return {
-                type: NodeType.Operator,
-                value: readWhile(isOpChar)
-            };
+        if (isOpChar(c)) return { type: NodeType.Operator, value: readWhile(isOpChar) };
 
         input.err("Can't handle character: " + c);
-    }
-
-    function peek() {
-        return current || (current = readNext());
-    }
-
+    }    
     function next() {
         var tok = current;
         current = null;
         return tok || readNext();
-    }
-
-    function eof() {
-        return peek() == null;
     }
 }
