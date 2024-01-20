@@ -3,6 +3,8 @@
 
 A simple programming language inspired by the Kashmiri language (Koshur).
 
+Try it out: [Koshur Online](https://koshur.afaan.dev)
+
 ---
 
 ### **Author**: [Afaan Bilal](https://afaan.dev)
