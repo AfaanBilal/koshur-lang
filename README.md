@@ -94,10 +94,36 @@ wan(bod-kus(10, 20)); # Prints 20
 ```
 This creates a function (lambda) named `bod-kus` which returns the bigger of the two parameters.
 
+Functions may be multiline:
+```
+karunPrintFibonacci = banav(hadd, aediuk, patium) {
+    yeli (hadd > 0) {
+        wan(aediuk + patium);
+        karunPrintFibonacci(hadd - 1, patium, aediuk + patium);
+    } nate {
+        wan("Done!");
+    }
+};
+
+karunPrintFibonacci(10, 0, 1);
+```
+The above code prints:
+```
+1
+2
+3
+5
+8
+13
+21
+34
+55
+89
+Done!
+```
+Shortcut for `banav` is `λ`
 
 ```
-# Shortcut for banav is λ
-
 lakut-kus = λ(x, y) yeli x < y teli x nate y;
 
 wan(lakut-kus(10, 20)); # Prints 10
