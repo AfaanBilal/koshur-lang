@@ -1,3 +1,9 @@
+#
+# Test
+#
+# Koshur lang (https://github.com/AfaanBilal/koshur-lang)
+#
+
 # This is a comment
 
 wan("Hello!");
@@ -30,3 +36,17 @@ lakut-kus = λ(x, y) yeli x < y teli x nate y;
 wan(lakut-kus(10, 20)); # Prints 10
 
 wan("x =", x, "y =", y);
+
+wansaDaleel = banav(n, i) {
+    yeli i == apuz {
+        wan("Boz sa daleel asel paeth!");
+        wansaDaleel(n, 1);
+    } nate yeli i <= n {
+        wan("Ye hasa daleel number", i);
+        wansaDaleel(n, i + 1);
+    } nate {
+        wan("Bas, yuti ous!");
+    };
+};
+
+wansaDaleel(5);
