@@ -3,6 +3,8 @@
 
 A simple programming language inspired by the Kashmiri language (Koshur).
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/AfaanBilal/koshur-lang)
+
 Try it out: [Koshur Online](https://koshur.afaan.dev)
 
 ---
