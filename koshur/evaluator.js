@@ -7,11 +7,12 @@
  * @license MIT
  */
 
+
 import { NodeType } from "./parser.js";
 
 export class Environment {
     constructor(parent) {
-        this.vars = Object.create(parent ? parent.vars : null);
+        this.vars = parent ? { ...parent.vars } : {};
         this.parent = parent;
     }
 
@@ -20,29 +21,21 @@ export class Environment {
     }
 
     lookup(name) {
-        var scope = this;
-
+        let scope = this;
         while (scope) {
-            if (Object.prototype.hasOwnProperty.call(scope.vars, name))
-                return scope;
-
+            if (Object.prototype.hasOwnProperty.call(scope.vars, name)) return scope;
             scope = scope.parent;
         }
     }
 
     get(name) {
-        if (name in this.vars)
-            return this.vars[name];
-
-        throw new Error("Undefined variable " + name);
+        if (name in this.vars) return this.vars[name];
+        throw new Error(`Undefined variable ${name}`);
     }
 
     set(name, value) {
-        var scope = this.lookup(name);
-
-        if (!scope && this.parent)
-            throw new Error("Undefined variable " + name);
-
+        const scope = this.lookup(name);
+        if (!scope && this.parent) throw new Error(`Undefined variable ${name}`);
         return (scope || this).vars[name] = value;
     }
 
@@ -50,6 +43,8 @@ export class Environment {
         return this.vars[name] = value;
     }
 }
+
+const memoCache = new Map();
 
 export function evaluate(exp, env) {
     switch (exp.type) {
@@ -62,70 +57,75 @@ export function evaluate(exp, env) {
             return env.get(exp.value);
 
         case NodeType.Assignment:
-            if (exp.left.type != NodeType.Variable)
-                throw new Error("Cannot assign to " + JSON.stringify(exp.left));
+            if (exp.left.type !== NodeType.Variable) throw new Error(`Cannot assign to ${JSON.stringify(exp.left)}`);
             return env.set(exp.left.value, evaluate(exp.right, env));
 
         case NodeType.Binary:
-            return applyOp(exp.operator,
-                evaluate(exp.left, env),
-                evaluate(exp.right, env));
+            const left = evaluate(exp.left, env);
+            const right = evaluate(exp.right, env);
+            return applyOp(exp.operator, left, right);
 
         case NodeType.Lambda:
             return makeLambda(env, exp);
 
         case NodeType.Condition:
-            var cond = evaluate(exp.cond, env);
+            const cond = evaluate(exp.cond, env);
             if (cond !== false) return evaluate(exp.then, env);
             return exp.else ? evaluate(exp.else, env) : false;
 
         case NodeType.Program:
-            var val = false;
-            exp.program.forEach(exp => { val = evaluate(exp, env) });
+            let val = false;
+            for (const subExp of exp.program) {
+                val = evaluate(subExp, env);
+            }
             return val;
 
         case NodeType.Call:
-            var func = evaluate(exp.func, env);
-            return func.apply(null, exp.args.map(arg => evaluate(arg, env)));
+            const func = evaluate(exp.func, env);
+            return func(...exp.args.map(arg => evaluate(arg, env)));
 
         default:
-            throw new Error("I don't know how to evaluate " + exp.type);
+            throw new Error(`I don't know how to evaluate ${exp.type}`);
     }
 }
 
 function applyOp(op, a, b) {
-    function num(x) {
-        if (typeof x != "number")
-            throw new Error("Expected number but got " + x);
-        return x;
-    }
-
-    function div(x) {
-        if (num(x) == 0)
-            throw new Error("Division by zero");
-        return x;
-    }
+    const numA = num(a);
+    const numB = num(b);
 
     switch (op) {
-        case "+": return num(a) + num(b);
-        case "-": return num(a) - num(b);
-        case "*": return num(a) * num(b);
-        case "/": return num(a) / div(b);
-        case "%": return num(a) % div(b);
+        case "+": return numA + numB;
+        case "-": return numA - numB;
+        case "*": return numA * numB;
+        case "/": return numA / div(numB);
+        case "%": return numA % div(numB);
         case "&&": return a !== false && b;
         case "||": return a !== false ? a : b;
-        case "<": return num(a) < num(b);
-        case ">": return num(a) > num(b);
-        case "<=": return num(a) <= num(b);
-        case ">=": return num(a) >= num(b);
+        case "<": return numA < numB;
+        case ">": return numA > numB;
+        case "<=": return numA <= numB;
+        case ">=": return numA >= numB;
         case "==": return a === b;
         case "!=": return a !== b;
     }
 
-    throw new Error("Unknown operator " + op);
+    throw new Error(`Unknown operator ${op}`);
+}
+
+function num(x) {
+    if (typeof x !== "number") throw new Error(`Expected number but got ${x}`);
+    return x;
+}
+
+function div(x) {
+    if (num(x) === 0) throw new Error("Division by zero");
+    return x;
 }
 
 function makeLambda(env, exp) {
+    const cacheKey = JSON.stringify(exp);
+    if (memoCache.has(cacheKey)) return memoCache.get(cacheKey);
+
     function lambda() {
         var names = exp.vars;
         var scope = env.extend();
@@ -136,6 +136,6 @@ function makeLambda(env, exp) {
 
         return evaluate(exp.body, scope);
     }
-
+    memoCache.set(cacheKey, lambda);
     return lambda;
 }
